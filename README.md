@@ -1,3 +1,5 @@
+# Video : https://youtu.be/KGJ0hbasVx4
+
 # 🍳 YummiAPI - Plataforma de Recetas Culinarias
 
 API REST desarrollada con Node.js, Express, MongoDB y Dotenv para una plataforma de recetas culinarias donde los usuarios pueden registrarse, agregar recetas con ingredientes, y buscar recetas por ingrediente.
