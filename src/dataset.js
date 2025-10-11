@@ -1,6 +1,20 @@
+// Importación de funciones para conexión y acceso a la base de datos
 import { conectarBD, obtenerBD } from "./config/db.js";
 
-// Datos de prueba para usuarios
+/**
+ * DATASET DE PRUEBA PARA YUMMIAPI
+ * 
+ * Este archivo contiene datos de prueba para inicializar la base de datos
+ * con información de ejemplo que permite probar todas las funcionalidades
+ * de la API de recetas culinarias.
+ */
+
+// ===== DATOS DE PRUEBA PARA USUARIOS =====
+
+/**
+ * Array de usuarios de prueba para el sistema
+ * Cada usuario tiene: id, nombre, email y fecha de registro
+ */
 const usuariosPrueba = [
     {
         id: 1,
@@ -22,7 +36,12 @@ const usuariosPrueba = [
     }
 ];
 
-// Datos de prueba para recetas
+// ===== DATOS DE PRUEBA PARA RECETAS =====
+
+/**
+ * Array de recetas de prueba para el sistema
+ * Cada receta tiene: id, título, descripción, usuarioId, fecha de creación e ingredientes
+ */
 const recetasPrueba = [
     {
         id: 1,
@@ -58,7 +77,13 @@ const recetasPrueba = [
     }
 ];
 
-// Datos de prueba para ingredientes
+// ===== DATOS DE PRUEBA PARA INGREDIENTES =====
+
+/**
+ * Array de ingredientes de prueba para el sistema
+ * Cada ingrediente tiene: id, nombre, recetaId y fecha de agregado
+ * Los ingredientes están organizados por receta para facilitar la comprensión
+ */
 const ingredientesPrueba = [
     // Ingredientes para Pasta Carbonara (receta 1)
     { id: 1, nombre: "Pasta", recetaId: 1, fechaAgregado: "2024-01-16T12:05:00Z" },
@@ -90,35 +115,42 @@ const ingredientesPrueba = [
     { id: 21, nombre: "Cilantro", recetaId: 4, fechaAgregado: "2024-02-02T16:50:00Z" }
 ];
 
+/**
+ * Función principal para inicializar la base de datos con datos de prueba
+ * Limpia las colecciones existentes e inserta los datos de prueba
+ * @returns {Promise<void>}
+ */
 async function inicializarDatos() {
     try {
         console.log("Iniciando inserción de datos de prueba...");
         
-        // Limpiar colecciones existentes
+        // Limpia todas las colecciones existentes para evitar duplicados
         await obtenerBD().collection("usuarios").deleteMany({});
         await obtenerBD().collection("recetas").deleteMany({});
         await obtenerBD().collection("ingredientes").deleteMany({});
         
         console.log("Colecciones limpiadas.");
         
-        // Insertar usuarios
+        // Inserta los usuarios de prueba en la base de datos
         await obtenerBD().collection("usuarios").insertMany(usuariosPrueba);
         console.log(`${usuariosPrueba.length} usuarios insertados.`);
         
-        // Insertar recetas
+        // Inserta las recetas de prueba en la base de datos
         await obtenerBD().collection("recetas").insertMany(recetasPrueba);
         console.log(`${recetasPrueba.length} recetas insertadas.`);
         
-        // Insertar ingredientes
+        // Inserta los ingredientes de prueba en la base de datos
         await obtenerBD().collection("ingredientes").insertMany(ingredientesPrueba);
         console.log(`${ingredientesPrueba.length} ingredientes insertados.`);
         
+        // Muestra resumen de datos insertados
         console.log("✅ Datos de prueba inicializados exitosamente!");
         console.log("\n📊 Resumen de datos insertados:");
         console.log(`👥 Usuarios: ${usuariosPrueba.length}`);
         console.log(`🍳 Recetas: ${recetasPrueba.length}`);
         console.log(`🥕 Ingredientes: ${ingredientesPrueba.length}`);
         
+        // Muestra ejemplos de endpoints que se pueden probar
         console.log("\n🔍 Ejemplos de búsquedas que puedes probar:");
         console.log("- Buscar recetas con 'pollo': GET /ingredientes/buscar?nombre=pollo");
         console.log("- Ver recetas de usuario 1: GET /recetas/usuario/1");
@@ -129,14 +161,20 @@ async function inicializarDatos() {
     }
 }
 
-// Ejecutar si se llama directamente
+// ===== EJECUCIÓN AUTOMÁTICA =====
+
+/**
+ * Ejecuta la inicialización de datos si el archivo se ejecuta directamente
+ * Esto permite ejecutar el script independientemente para poblar la base de datos
+ */
 if (import.meta.url === `file://${process.argv[1]}`) {
     conectarBD().then(() => {
         inicializarDatos().then(() => {
-            process.exit(0);
+            process.exit(0); // Termina el proceso después de completar la inicialización
         });
     });
 }
 
+// Exporta la función para uso en otros módulos
 export { inicializarDatos };
 

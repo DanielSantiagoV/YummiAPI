@@ -1,5 +1,3 @@
-# Video : https://youtu.be/KGJ0hbasVx4
-
 # 🍳 YummiAPI - Plataforma de Recetas Culinarias
 
 API REST desarrollada con Node.js, Express, MongoDB y Dotenv para una plataforma de recetas culinarias donde los usuarios pueden registrarse, agregar recetas con ingredientes, y buscar recetas por ingrediente.
@@ -89,7 +87,13 @@ GET /health
 GET /usuarios
 ```
 
-**Respuesta:**
+**Descripción:** Obtiene una lista completa de todos los usuarios registrados en la plataforma. Este endpoint es útil para administradores que necesitan ver un panorama general de la base de usuarios.
+
+**Parámetros:** Ninguno
+
+**Headers requeridos:** Ninguno
+
+**Respuesta exitosa (200):**
 ```json
 {
   "message": "Usuarios obtenidos exitosamente",
@@ -105,15 +109,27 @@ GET /usuarios
 }
 ```
 
+**Casos de uso:**
+- Panel de administración para ver todos los usuarios
+- Estadísticas generales de la plataforma
+- Verificación de usuarios registrados
+
+**Posibles errores:**
+- `500` - Error interno del servidor si hay problemas con la base de datos
+
 ### 2. Obtener usuario por ID
 ```http
 GET /usuarios/:id
 ```
 
-**Parámetros:**
-- `id` (number): ID del usuario
+**Descripción:** Obtiene la información detallada de un usuario específico mediante su ID único. Este endpoint es fundamental para perfiles de usuario y operaciones que requieren verificar la existencia de un usuario.
 
-**Respuesta:**
+**Parámetros de ruta:**
+- `id` (number, requerido): ID único del usuario a consultar
+
+**Headers requeridos:** Ninguno
+
+**Respuesta exitosa (200):**
 ```json
 {
   "message": "Usuario obtenido exitosamente",
@@ -126,12 +142,34 @@ GET /usuarios/:id
 }
 ```
 
+**Casos de uso:**
+- Perfil de usuario en la interfaz
+- Verificación de usuario antes de crear recetas
+- Validación de permisos de usuario
+- Dashboard personalizado
+
+**Posibles errores:**
+- `404` - Usuario no encontrado si el ID no existe
+- `500` - Error interno del servidor
+
+**Ejemplo de uso con curl:**
+```bash
+curl -X GET http://localhost:3000/usuarios/1
+```
+
 ### 3. Crear nuevo usuario
 ```http
 POST /usuarios
 ```
 
-**Body:**
+**Descripción:** Registra un nuevo usuario en la plataforma. Este endpoint valida que el ID sea único y que se proporcionen todos los campos obligatorios. La fecha de registro se asigna automáticamente.
+
+**Headers requeridos:**
+```
+Content-Type: application/json
+```
+
+**Body (JSON, requerido):**
 ```json
 {
   "id": 4,
@@ -140,7 +178,12 @@ POST /usuarios
 }
 ```
 
-**Respuesta:**
+**Campos del body:**
+- `id` (number, requerido): ID único del usuario (debe ser único en el sistema)
+- `nombre` (string, requerido): Nombre completo del usuario
+- `email` (string, requerido): Dirección de correo electrónico del usuario
+
+**Respuesta exitosa (201):**
 ```json
 {
   "message": "Usuario creado exitosamente",
@@ -152,6 +195,28 @@ POST /usuarios
   }
 }
 ```
+
+**Casos de uso:**
+- Registro de nuevos usuarios en la plataforma
+- Migración de usuarios desde otros sistemas
+- Creación de usuarios de prueba
+
+**Posibles errores:**
+- `400` - Faltan campos obligatorios o datos inválidos
+- `400` - Ya existe un usuario con ese ID
+- `500` - Error interno del servidor
+
+**Ejemplo de uso con curl:**
+```bash
+curl -X POST http://localhost:3000/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{"id": 4, "nombre": "Carlos Rodríguez", "email": "carlos.rodriguez@email.com"}'
+```
+
+**Validaciones implementadas:**
+- Verificación de campos obligatorios (id, nombre, email)
+- Validación de unicidad del ID
+- Asignación automática de fecha de registro
 
 ### 4. Actualizar usuario
 ```http
@@ -200,7 +265,13 @@ DELETE /usuarios/:id
 GET /recetas
 ```
 
-**Respuesta:**
+**Descripción:** Obtiene una lista completa de todas las recetas disponibles en la plataforma. Este endpoint es ideal para mostrar un catálogo general de recetas o para operaciones de búsqueda y filtrado.
+
+**Parámetros:** Ninguno
+
+**Headers requeridos:** Ninguno
+
+**Respuesta exitosa (200):**
 ```json
 {
   "message": "Recetas obtenidas exitosamente",
@@ -218,15 +289,38 @@ GET /recetas
 }
 ```
 
+**Campos de respuesta:**
+- `message` (string): Mensaje de confirmación
+- `count` (number): Número total de recetas encontradas
+- `recetas` (array): Lista de objetos receta con información básica
+
+**Casos de uso:**
+- Catálogo general de recetas
+- Página principal de la aplicación
+- Estadísticas de la plataforma
+- Operaciones de búsqueda y filtrado
+
+**Posibles errores:**
+- `500` - Error interno del servidor si hay problemas con la base de datos
+
+**Ejemplo de uso con curl:**
+```bash
+curl -X GET http://localhost:3000/recetas
+```
+
 ### 2. Obtener receta por ID (con ingredientes)
 ```http
 GET /recetas/:id
 ```
 
-**Parámetros:**
-- `id` (number): ID de la receta
+**Descripción:** Obtiene la información completa de una receta específica, incluyendo todos sus ingredientes. Este endpoint es fundamental para mostrar el detalle de una receta en la interfaz de usuario.
 
-**Respuesta:**
+**Parámetros de ruta:**
+- `id` (number, requerido): ID único de la receta a consultar
+
+**Headers requeridos:** Ninguno
+
+**Respuesta exitosa (200):**
 ```json
 {
   "message": "Receta obtenida exitosamente",
@@ -253,6 +347,36 @@ GET /recetas/:id
   }
 }
 ```
+
+**Campos de respuesta:**
+- `message` (string): Mensaje de confirmación
+- `receta` (object): Objeto con información completa de la receta
+  - `id` (number): ID único de la receta
+  - `titulo` (string): Título de la receta
+  - `descripcion` (string): Descripción detallada
+  - `usuarioId` (number): ID del usuario propietario
+  - `fechaCreacion` (string): Fecha de creación en formato ISO 8601
+  - `ingredientes` (array): Lista de ingredientes con información completa
+
+**Casos de uso:**
+- Página de detalle de receta
+- Vista de receta completa para cocinar
+- Verificación de ingredientes antes de comprar
+- Compartir receta con otros usuarios
+
+**Posibles errores:**
+- `404` - Receta no encontrada si el ID no existe
+- `500` - Error interno del servidor
+
+**Ejemplo de uso con curl:**
+```bash
+curl -X GET http://localhost:3000/recetas/1
+```
+
+**Notas técnicas:**
+- Este endpoint realiza una consulta adicional para obtener los ingredientes
+- Los ingredientes se ordenan por fecha de agregado
+- La respuesta incluye información completa para renderizado en frontend
 
 ### 3. Obtener recetas de un usuario específico
 ```http
@@ -438,10 +562,14 @@ DELETE /ingredientes/:id/receta/:recetaId
 GET /ingredientes/buscar?nombre=pollo
 ```
 
-**Parámetros de consulta:**
-- `nombre` (string): Nombre del ingrediente a buscar
+**Descripción:** Busca todas las recetas que contengan un ingrediente específico. Esta es una funcionalidad clave que permite a los usuarios encontrar recetas basándose en ingredientes que tienen disponibles. La búsqueda es case-insensitive y utiliza expresiones regulares para coincidencias parciales.
 
-**Respuesta:**
+**Parámetros de consulta:**
+- `nombre` (string, requerido): Nombre del ingrediente a buscar (búsqueda parcial, case-insensitive)
+
+**Headers requeridos:** Ninguno
+
+**Respuesta exitosa (200):**
 ```json
 {
   "message": "Recetas encontradas con el ingrediente 'pollo'",
@@ -480,6 +608,46 @@ GET /ingredientes/buscar?nombre=pollo
   ]
 }
 ```
+
+**Campos de respuesta:**
+- `message` (string): Mensaje descriptivo con el ingrediente buscado
+- `count` (number): Número total de recetas encontradas
+- `recetas` (array): Lista de recetas que contienen el ingrediente
+  - `ingredientesEncontrados` (array): Lista de ingredientes que coinciden con la búsqueda
+
+**Casos de uso:**
+- Búsqueda de recetas por ingredientes disponibles
+- Sugerencias de recetas basadas en ingredientes
+- Filtrado de recetas por ingredientes específicos
+- Funcionalidad "¿Qué puedo cocinar con...?"
+
+**Posibles errores:**
+- `400` - Parámetro 'nombre' no proporcionado
+- `500` - Error interno del servidor
+
+**Ejemplos de búsqueda:**
+```bash
+# Búsqueda exacta
+curl "http://localhost:3000/ingredientes/buscar?nombre=pollo"
+
+# Búsqueda parcial (encuentra "pollo", "pollo al", etc.)
+curl "http://localhost:3000/ingredientes/buscar?nombre=pol"
+
+# Búsqueda case-insensitive
+curl "http://localhost:3000/ingredientes/buscar?nombre=POLLO"
+```
+
+**Características técnicas:**
+- **Búsqueda case-insensitive**: "pollo", "POLLO", "Pollo" dan los mismos resultados
+- **Búsqueda parcial**: "pol" encuentra "pollo", "polenta", etc.
+- **Expresiones regulares**: Utiliza MongoDB regex para búsquedas flexibles
+- **Optimización**: Consulta eficiente que evita cargar todas las recetas
+
+**Casos de prueba recomendados:**
+- `nombre=pollo` → 3 recetas
+- `nombre=queso` → 2 recetas  
+- `nombre=cebolla` → 2 recetas
+- `nombre=arroz` → 0 recetas (si no hay recetas con arroz)
 
 ---
 
@@ -752,6 +920,134 @@ Content-Type: application/json
 - ✅ **Listado de recetas por usuario**
 - ✅ **Eliminación en cascada** (usuario → recetas → ingredientes)
 - ✅ **Validaciones y manejo de errores**
+
+---
+
+## 🔧 **Documentación Técnica Avanzada**
+
+### **Arquitectura de la API**
+
+#### **Patrón MVC Implementado:**
+```
+Controllers → Services → Database
+     ↓           ↓         ↓
+  Routes    Business    MongoDB
+           Logic
+```
+
+#### **Estructura de Respuestas:**
+Todas las respuestas siguen un patrón consistente:
+```json
+{
+  "message": "Descripción de la operación",
+  "count": 0,           // Solo en listas
+  "data": {},           // Datos específicos
+  "error": "Mensaje"    // Solo en errores
+}
+```
+
+### **Validaciones Implementadas**
+
+#### **Usuarios:**
+- ✅ ID único en el sistema
+- ✅ Campos obligatorios: id, nombre, email
+- ✅ Validación de formato de email
+- ✅ Prevención de duplicados
+
+#### **Recetas:**
+- ✅ ID único en el sistema
+- ✅ Campos obligatorios: id, titulo, descripcion, usuarioId
+- ✅ Verificación de existencia del usuario propietario
+- ✅ Validación de longitud de campos
+
+#### **Ingredientes:**
+- ✅ ID único por receta
+- ✅ Campos obligatorios: id, nombre, recetaId
+- ✅ Verificación de existencia de la receta
+- ✅ Prevención de duplicados por receta
+
+### **Optimizaciones de Rendimiento**
+
+#### **Consultas Eficientes:**
+- **Índices recomendados en MongoDB:**
+  ```javascript
+  // Índices para optimizar consultas
+  db.usuarios.createIndex({ "id": 1 })
+  db.recetas.createIndex({ "id": 1 })
+  db.recetas.createIndex({ "usuarioId": 1 })
+  db.ingredientes.createIndex({ "recetaId": 1 })
+  db.ingredientes.createIndex({ "nombre": "text" })
+  ```
+
+#### **Estrategias de Caching:**
+- Respuestas de listas pueden ser cacheadas por 5 minutos
+- Búsquedas frecuentes pueden usar cache Redis
+- Headers de cache recomendados para endpoints GET
+
+### **Manejo de Errores Avanzado**
+
+#### **Códigos de Estado HTTP:**
+- `200` - Operación exitosa
+- `201` - Recurso creado exitosamente
+- `400` - Datos de entrada inválidos
+- `404` - Recurso no encontrado
+- `500` - Error interno del servidor
+
+#### **Estructura de Errores:**
+```json
+{
+  "error": "Mensaje descriptivo del error",
+  "code": "ERROR_CODE",
+  "details": "Información adicional para debugging"
+}
+```
+
+### **Seguridad y Buenas Prácticas**
+
+#### **Validación de Entrada:**
+- Sanitización de strings para prevenir inyecciones
+- Validación de tipos de datos
+- Límites de longitud en campos de texto
+
+#### **Headers de Seguridad Recomendados:**
+```
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+```
+
+### **Monitoreo y Logging**
+
+#### **Métricas Recomendadas:**
+- Tiempo de respuesta por endpoint
+- Número de requests por minuto
+- Errores por tipo y endpoint
+- Uso de memoria y CPU
+
+#### **Logs Estructurados:**
+```json
+{
+  "timestamp": "2024-02-15T10:30:00Z",
+  "level": "INFO",
+  "endpoint": "GET /recetas",
+  "responseTime": 150,
+  "statusCode": 200
+}
+```
+
+### **Escalabilidad**
+
+#### **Consideraciones para Alto Tráfico:**
+- Implementar rate limiting por IP
+- Usar connection pooling para MongoDB
+- Considerar sharding por usuarioId para recetas
+- Implementar paginación en listas grandes
+
+#### **Límites Recomendados:**
+- Máximo 1000 usuarios por página
+- Máximo 500 recetas por página
+- Máximo 50 ingredientes por receta
+- Timeout de 30 segundos por request
 
 ---
 
