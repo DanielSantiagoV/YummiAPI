@@ -2,6 +2,9 @@
 
 API REST desarrollada con Node.js, Express, MongoDB y Dotenv para una plataforma de recetas culinarias donde los usuarios pueden registrarse, agregar recetas con ingredientes, y buscar recetas por ingrediente.
 
+
+# Video : https://youtu.be/KGJ0hbasVx4
+
 ## 🚀 Características
 
 - **Gestión de usuarios**: Registro, consulta, actualización y eliminación
